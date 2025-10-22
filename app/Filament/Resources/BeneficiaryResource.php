@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BeneficiaryResource\Pages;
 use App\Models\Beneficiary;
 use App\Models\Region;
+use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -16,7 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Collection;
 use Filament\Tables\Actions\BulkAction;
-use Filament\Actions\Action;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Actions\ExportAction;
 use App\Imports\BeneficiariesImport;
@@ -206,25 +207,35 @@ class BeneficiaryResource extends Resource
                 ]),
             ])
             ->headerActions([
-                // Fitur Import Excel
+                // Import Excel
                 Action::make('import')
                     ->label('Import Excel')
                     ->icon('heroicon-o-arrow-up-tray')
+                    ->color('primary')
                     ->form([
                         Forms\Components\FileUpload::make('file')
                             ->label('File Excel')
-                            ->acceptedFileTypes(['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'])
+                            ->directory('imports')
+                            ->acceptedFileTypes([
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            ])
                             ->required(),
                     ])
-                    ->action(function (array $data) {
-                        // Implementasi import Excel
+                    ->action(function (array $data, $livewire) {
+                        $path = storage_path('app/public/' . $data['file']);
+                        Excel::import(new BeneficiariesImport, $path);
+                        $livewire->notify('success', 'Data penerima berhasil diimpor!');
                     }),
-                // Fitur Export Excel
+
+                // Export Excel
                 Action::make('export')
                     ->label('Export Excel')
                     ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
                     ->action(function () {
-                        // Implementasi export Excel
+                        $fileName = 'data_penerima_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+                        return Excel::download(new BeneficiariesExport, $fileName);
                     }),
             ]);
     }
