@@ -34,3 +34,4 @@ class Region extends Model
         return $this->hasMany(Beneficiary::class, 'desa_id');
     }
 }
+
