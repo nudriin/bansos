@@ -15,6 +15,8 @@ class RegionResource extends Resource
     protected static ?string $model = Region::class;
     protected static ?string $navigationIcon = 'heroicon-o-map';
     protected static ?string $navigationLabel = 'Wilayah';
+    protected static ?string $modelLabel = 'Wilayah';
+    protected static ?string $pluralModelLabel = 'Wilayah';
     // protected static ?string $navigationGroup = 'Manajemen Data';
     protected static ?int $navigationSort = 3;
 

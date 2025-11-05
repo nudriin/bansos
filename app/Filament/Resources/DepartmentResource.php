@@ -15,6 +15,8 @@ class DepartmentResource extends Resource
     protected static ?string $model = Department::class;
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationLabel = 'Bidang';
+    protected static ?string $modelLabel = 'Bidang';
+    protected static ?string $pluralModelLabel = 'Bidang';
     // protected static ?string $navigationGroup = 'Manajemen Data';
     protected static ?int $navigationSort = 2;
 

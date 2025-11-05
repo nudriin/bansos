@@ -26,7 +26,9 @@ use App\Exports\BeneficiariesExport;
 class BeneficiaryResource extends Resource
 {
     protected static ?string $model = Beneficiary::class;
+    protected static ?string $modelLabel = 'Penerima Bantuan';
     protected static ?string $navigationLabel = 'Penerima Bantuan';
+    protected static ?string $pluralModelLabel = 'Penerima Bantuan';
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     // protected static ?string $navigationGroup = 'Manajemen Penerima Bantuan';
     protected static ?int $navigationSort = 1;

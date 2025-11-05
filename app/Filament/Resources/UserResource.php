@@ -18,6 +18,8 @@ use Filament\Resources\Pages\EditRecord;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+    protected static ?string $modelLabel = 'Manajemen User';
+    protected static ?string $pluralModelLabel = 'Manajemen User';
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationLabel = 'Manajemen User';
     // protected static ?string $navigationGroup = 'Manajemen Sistem';
