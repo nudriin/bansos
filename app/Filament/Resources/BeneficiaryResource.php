@@ -22,6 +22,7 @@ use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Actions\ExportAction;
 use App\Imports\BeneficiariesImport;
 use App\Exports\BeneficiariesExport;
+use Filament\Notifications\Notification;
 
 class BeneficiaryResource extends Resource
 {
@@ -228,7 +229,12 @@ class BeneficiaryResource extends Resource
                     ->action(function (array $data, $livewire) {
                         $path = storage_path('app/public/' . $data['file']);
                         Excel::import(new BeneficiariesImport, $path);
-                        $livewire->notify('success', 'Data penerima berhasil diimpor!');
+                        Notification::make()
+                            ->title('Data penerima berhasil diimpor!')
+                            ->success() // Ini untuk membuatnya jadi hijau (success)
+                            ->send();    // Ini untuk mengirim notifikasi
+                        // Refresh the table after import
+                        $livewire->redirect(request()->header('Referer'));
                     }),
 
                 // Export Excel
