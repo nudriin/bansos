@@ -14,7 +14,8 @@ class RegionResource extends Resource
 {
     protected static ?string $model = Region::class;
     protected static ?string $navigationIcon = 'heroicon-o-map';
-    protected static ?string $navigationGroup = 'Manajemen Data';
+    protected static ?string $navigationLabel = 'Wilayah';
+    // protected static ?string $navigationGroup = 'Manajemen Data';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -46,7 +47,7 @@ class RegionResource extends Resource
                     ->searchable()
                     ->preload()
                     ->label('Wilayah Induk')
-                    ->visible(fn ($get) => $get('type') !== 'kabupaten'),
+                    ->visible(fn($get) => $get('type') !== 'kabupaten'),
             ]);
     }
 
@@ -59,7 +60,7 @@ class RegionResource extends Resource
                     ->label('Nama Wilayah'),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'kabupaten' => 'Kabupaten/Kota',
                         'kecamatan' => 'Kecamatan',
                         'desa' => 'Desa/Kelurahan',

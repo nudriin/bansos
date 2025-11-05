@@ -19,7 +19,8 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'Manajemen Sistem';
+    protected static ?string $navigationLabel = 'Manajemen User';
+    // protected static ?string $navigationGroup = 'Manajemen Sistem';
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -106,11 +107,11 @@ class UserResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth()->user();
-        
+
         if (!$user) {
             return false;
         }
-        
+
         // Gunakan cara alternatif untuk memeriksa role
         return $user->roles->contains('name', 'super-admin');
     }
