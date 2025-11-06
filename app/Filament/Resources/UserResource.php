@@ -10,10 +10,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UserResource extends Resource
 {
@@ -105,16 +104,14 @@ class UserResource extends Resource
         return parent::getEloquentQuery();
     }
 
-    // Hanya Super Admin yang dapat mengakses resource ini
     public static function canAccess(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if (!$user) {
             return false;
         }
 
-        // Gunakan cara alternatif untuk memeriksa role
-        return $user->roles->contains('name', 'super-admin');
+        return $user->can('manage users');
     }
 }
