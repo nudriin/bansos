@@ -10,9 +10,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class UserResource extends Resource
 {
@@ -104,14 +104,33 @@ class UserResource extends Resource
         return parent::getEloquentQuery();
     }
 
-    public static function canAccess(): bool
+    public static function canViewAny(): bool
     {
-        $user = Auth::user();
+        return Auth::user()?->can('manage users') ?? false;
+    }
 
-        if (!$user) {
-            return false;
-        }
+    public static function canCreate(): bool
+    {
+        return static::canViewAny();
+    }
 
-        return $user->can('manage users');
+    public static function canEdit(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::canViewAny();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canViewAny();
     }
 }
