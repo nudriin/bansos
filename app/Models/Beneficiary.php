@@ -13,6 +13,8 @@ class Beneficiary extends Model
         'gender',
         'address',
         'has_received_aid',
+        'aid_year',
+        'aid_month',
         'department_id',
         'kabupaten_id',
         'kecamatan_id',

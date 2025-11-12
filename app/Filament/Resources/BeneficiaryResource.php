@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BeneficiaryResource\Pages;
 use App\Models\Beneficiary;
 use App\Models\Region;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -103,7 +104,31 @@ class BeneficiaryResource extends Resource
                             ->label('Alamat'),
                         Forms\Components\Toggle::make('has_received_aid')
                             ->label('Sudah Menerima Bantuan')
-                            ->default(false),
+                            ->default(false)
+                            ->reactive(),
+                        Forms\Components\TextInput::make('aid_period')
+                            ->label('Periode Bantuan (Opsional)')
+                            ->type('month')
+                            ->dehydrated(false)
+                            ->rule('date_format:Y-m')
+                            ->nullable()
+                            ->afterStateHydrated(function (Forms\Components\TextInput $component, ?string $state, ?Beneficiary $record): void {
+                                if ($record?->aid_year && $record?->aid_month) {
+                                    $component->state(sprintf('%d-%02d', $record->aid_year, $record->aid_month));
+                                }
+                            })
+                            ->afterStateUpdated(function (?string $state, callable $set): void {
+                                if (filled($state)) {
+                                    $date = Carbon::createFromFormat('Y-m', $state);
+                                    $set('aid_year', $date->year);
+                                    $set('aid_month', $date->month);
+                                } else {
+                                    $set('aid_year', null);
+                                    $set('aid_month', null);
+                                }
+                            }),
+                        Forms\Components\Hidden::make('aid_year'),
+                        Forms\Components\Hidden::make('aid_month'),
                         Forms\Components\Select::make('department_id')
                             ->relationship('department', 'name')
                             ->required()
@@ -146,6 +171,29 @@ class BeneficiaryResource extends Resource
                 Tables\Columns\IconColumn::make('has_received_aid')
                     ->boolean()
                     ->label('Status Bantuan'),
+                Tables\Columns\TextColumn::make('aid_year')
+                    ->label('Tahun Bantuan')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('aid_month')
+                    ->label('Bulan Bantuan')
+                    ->formatStateUsing(fn ($state) => $state ? [
+                        1 => 'Januari',
+                        2 => 'Februari',
+                        3 => 'Maret',
+                        4 => 'April',
+                        5 => 'Mei',
+                        6 => 'Juni',
+                        7 => 'Juli',
+                        8 => 'Agustus',
+                        9 => 'September',
+                        10 => 'Oktober',
+                        11 => 'November',
+                        12 => 'Desember',
+                    ][$state] : '-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('department.name')
                     ->searchable()
                     ->label('Bidang'),
@@ -185,6 +233,33 @@ class BeneficiaryResource extends Resource
                     ->placeholder('Semua Status')
                     ->trueLabel('Sudah Menerima')
                     ->falseLabel('Belum Menerima'),
+                SelectFilter::make('aid_year')
+                    ->label('Tahun Bantuan')
+                    ->options(function () {
+                        return Beneficiary::query()
+                            ->select('aid_year')
+                            ->distinct()
+                            ->whereNotNull('aid_year')
+                            ->orderByDesc('aid_year')
+                            ->pluck('aid_year', 'aid_year')
+                            ->toArray();
+                    }),
+                SelectFilter::make('aid_month')
+                    ->label('Bulan Bantuan')
+                    ->options([
+                        1 => 'Januari',
+                        2 => 'Februari',
+                        3 => 'Maret',
+                        4 => 'April',
+                        5 => 'Mei',
+                        6 => 'Juni',
+                        7 => 'Juli',
+                        8 => 'Agustus',
+                        9 => 'September',
+                        10 => 'Oktober',
+                        11 => 'November',
+                        12 => 'Desember',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -198,15 +273,30 @@ class BeneficiaryResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->action(function (Collection $records, array $data): void {
                             foreach ($records as $record) {
-                                $record->update([
-                                    'has_received_aid' => $data['has_received_aid'],
-                                ]);
+                                $updateData = ['has_received_aid' => $data['has_received_aid']];
+
+                                if (filled($data['aid_period'] ?? null)) {
+                                    $date = Carbon::createFromFormat('Y-m', $data['aid_period']);
+                                    $updateData['aid_year'] = $date->year;
+                                    $updateData['aid_month'] = $date->month;
+                                } else {
+                                    $updateData['aid_year'] = null;
+                                    $updateData['aid_month'] = null;
+                                }
+
+                                $record->update($updateData);
                             }
                         })
                         ->form([
                             Forms\Components\Toggle::make('has_received_aid')
                                 ->label('Sudah Menerima Bantuan')
-                                ->required(),
+                                ->required()
+                                ->reactive(),
+                            Forms\Components\TextInput::make('aid_period')
+                                ->label('Periode Bantuan (Opsional)')
+                                ->type('month')
+                                ->rule('date_format:Y-m')
+                                ->nullable(),
                         ]),
                 ]),
             ])
