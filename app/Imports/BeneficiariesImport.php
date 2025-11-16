@@ -41,6 +41,8 @@ class BeneficiariesImport implements ToModel, WithHeadingRow, WithValidation
             'gender' => $row['jenis_kelamin'],
             'address' => $row['alamat'],
             'has_received_aid' => $row['status_bantuan'] === 'Sudah' ? true : false,
+            'aid_year' => $row['tahun_bantuan'],
+            'aid_month' => $row['bulan_bantuan'],
             'department_id' => $department->id,
             'kabupaten_id' => $kabupaten->id,
             'kecamatan_id' => $kecamatan->id,

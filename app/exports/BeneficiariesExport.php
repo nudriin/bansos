@@ -22,6 +22,8 @@ class BeneficiariesExport implements FromCollection, WithHeadings
                     'Kecamatan' => optional($b->kecamatan)->name,
                     'Desa' => optional($b->desa)->name,
                     'Bidang' => optional($b->department)->name,
+                    'Tahun Bantuan' => $b->aid_year,
+                    'Bulan Bantuan' => $b->aid_month,
                     'Status Bantuan' => $b->has_received_aid ? 'Sudah' : 'Belum',
                 ];
             });
@@ -38,6 +40,8 @@ class BeneficiariesExport implements FromCollection, WithHeadings
             'Kecamatan',
             'Desa',
             'Bidang',
+            'Tahun Bantuan',
+            'Bulan Bantuan',
             'Status Bantuan',
         ];
     }
