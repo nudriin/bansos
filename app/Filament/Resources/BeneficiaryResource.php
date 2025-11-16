@@ -178,7 +178,7 @@ class BeneficiaryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('aid_month')
                     ->label('Bulan Bantuan')
-                    ->formatStateUsing(fn ($state) => $state ? [
+                    ->formatStateUsing(fn($state) => $state ? [
                         1 => 'Januari',
                         2 => 'Februari',
                         3 => 'Maret',
@@ -273,6 +273,7 @@ class BeneficiaryResource extends Resource
                         ->icon('heroicon-o-check-circle')
                         ->action(function (Collection $records, array $data): void {
                             foreach ($records as $record) {
+                                /** @var Beneficiary $record */
                                 $updateData = ['has_received_aid' => $data['has_received_aid']];
 
                                 if (filled($data['aid_period'] ?? null)) {
